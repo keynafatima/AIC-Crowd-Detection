@@ -31,9 +31,9 @@ def predict_kereta():
     best_carriage = None
     min_count = 999999
 
-    kapasitas = 40  # misal kapasitas 40 orang per gerbong
+    kapasitas = 40  # kapasitas per gerbong
 
-    for f in os.listdir(DATA_DIR):
+    for i, f in enumerate(sorted(os.listdir(DATA_DIR))):  # urutkan file biar stabil
         if f.lower().endswith((".jpg",".png",".jpeg")):
             path = os.path.join(DATA_DIR, f)
             r = infer_on_image_path(path)
@@ -43,15 +43,16 @@ def predict_kereta():
             shutil.copy(r["heatmap"], out_file)
             r["out_file"] = f"static/out_{base}.jpg"
 
+            r["carriage"] = i + 1   # nomor gerbong
             r["occupancy"] = round((r["count"]/kapasitas)*100,1)
 
             results.append(r)
 
             if r["count"] < min_count:
                 min_count = r["count"]
-                best_carriage = r.get("carriage", f)
+                best_carriage = i + 1
 
-    rekom = f"Naik di gerbong {best_carriage}, karena lebih sepi."
+    rekom = f"Naik di Gerbong {best_carriage}, karena lebih sepi."
     return {
         "results": results,
         "best_carriage": best_carriage,

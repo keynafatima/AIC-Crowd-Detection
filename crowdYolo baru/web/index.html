@@ -201,13 +201,13 @@ input[type="file"] {
 </head>
 <body>
 <header>
-  <h1>Crowd Checker (YOLO)</h1>
+  <h1>Crowd Checker</h1>
   <p class="badge">🚀 Smart City Prototype</p>
 </header>
 
 <div class="container">
   <div class="card">
-    <p>📂 Letakkan gambar di folder <code>data/</code></p>
+    <p style="text-align:center">Pilih transportasi yang ingin dicek</p>
     <!-- Mode Pilih Transportasi -->
     <div style="display:flex; gap:10px; justify-content:center; margin:1rem 0;">
       <button onclick="chooseMode('kereta')">🚆 Kereta</button>
@@ -259,6 +259,7 @@ async function processKereta() {
     <h4>Rekomendasi: Gerbong ${data.best_carriage}</h4>
     <p>Terisi: ${data.occupancy} orang</p>
     <div>${data.desc}</div>
+
   `;
   const listDiv = document.getElementById("keretaList");
   listDiv.innerHTML = "";
