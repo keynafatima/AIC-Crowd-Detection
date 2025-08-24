@@ -1,225 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crowd Checker with YOLO</title>
-  <style>
-    @import url("https://fonts.cdnfonts.com/css/mona-sans");
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Crowd Checker with YOLO</title>
+<style>
+@import url("https://fonts.cdnfonts.com/css/mona-sans");
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Mona Sans", sans-serif;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Mona Sans", sans-serif;
+}
 
-    body {
-      background: linear-gradient(135deg, #e6f2ff, #f9fbff);
-      color: #1b2a49;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+body {
+  background: linear-gradient(135deg, #dbeafe, #eef2ff, #f8fafc);
+  color: #1b2a49;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-    header {
-      text-align: center;
-      padding: 2rem 1rem;
-      background: #ffffff;
-      border-bottom: 4px solid #0077ff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+/* HEADER */
+header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border-bottom: 4px solid #1e40af;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+header h1 {
+  font-size: 2.2rem;
+  margin-bottom: .5rem;
+}
+header .badge {
+  display: inline-block;
+  padding: .4rem .9rem;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  border-radius: 999px;
+  font-size: .9rem;
+  font-weight: 600;
+}
 
-    header h1 {
-      font-size: 2rem;
-      color: #004aad;
-      margin-bottom: .5rem;
-    }
+/* CONTAINER & CARD */
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+.card {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(15px);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 900px;
+  transition: transform 0.25s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+}
+.card h3 {
+  margin-top: 1rem;
+  color: #1e40af;
+}
 
-    header .badge {
-      display: inline-block;
-      padding: .3rem .7rem;
-      background: #0077ff;
-      color: #fff;
-      border-radius: 999px;
-      font-size: .9rem;
-    }
+/* GRID */
+.grid {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.grid .card {
+  border: 1px solid #e0e7ff;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.grid .card:hover {
+  transform: scale(1.03);
+  border-color: #3b82f6;
+}
 
-    .container {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      padding: 2rem;
-    }
+/* BUTTON */
+button {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  padding: .7rem 1.4rem;
+  border-radius: .6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+button:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+}
+button:disabled {
+  background: #aacfff;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-    .card {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      width: 100%;
-      max-width: 800px;
-    }
+/* INPUT FILE */
+input[type="file"] {
+  padding: .5rem;
+  border: 2px dashed #3b82f6;
+  border-radius: .6rem;
+  background: #f0f8ff;
+  cursor: pointer;
+}
 
-    .card h3 {
-      margin-top: 1rem;
-      color: #004aad;
-    }
+/* IMAGE */
+.card img {
+  margin-top: .7rem;
+  width: 100%;
+  border-radius: .6rem;
+  border: 2px solid #e6f0ff;
+}
 
-    .grid {
-      margin-top: 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-    }
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-top: 2px solid #e5e7eb;
+  font-size: .9rem;
+  color: #6b7280;
+}
 
-    button {
-      background: #0077ff;
-      color: #fff;
-      border: none;
-      padding: .7rem 1.2rem;
-      border-radius: .6rem;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      font-weight: 600;
-    }
+/* CROWD INDICATOR */
+.crowd-indicator {
+  display: inline-block;
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: .8rem;
+  color: #fff;
+  margin-left: 0.5rem;
+}
+.low { background: #22c55e; }     /* Hijau */
+.medium { background: #eab308; }  /* Kuning */
+.high { background: #ef4444; }    /* Merah */
 
-    button:hover {
-      background: #005fcc;
-      transform: translateY(-2px);
-    }
+/* MODAL */
+#modal {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+  animation: fadeIn 0.3s ease;
+}
+#modal > div {
+  background:#fff;
+  padding:1.2rem;
+  border-radius:1rem;
+  max-width:90%;
+  max-height:90%;
+  text-align:center;
+  position:relative;
+  animation: scaleIn 0.3s ease;
+}
+#modal span {
+  position:absolute;
+  top:0.5rem; right:1rem;
+  font-size:1.5rem;
+  cursor:pointer;
+}
+#modalText {
+  margin-bottom:1rem;
+  font-weight:bold;
+}
+#modalImg {
+  max-width:100%;
+  max-height:70vh;
+  border-radius:0.5rem;
+  border:2px solid #e5e7eb;
+}
 
-    button:disabled {
-      background: #aacfff;
-      cursor: not-allowed;
-    }
-
-    input[type="file"] {
-      padding: .5rem;
-      border: 2px dashed #0077ff;
-      border-radius: .6rem;
-      background: #f0f8ff;
-      cursor: pointer;
-    }
-
-    .card img {
-      margin-top: .7rem;
-      width: 100%;
-      border-radius: .6rem;
-      border: 2px solid #e6f0ff;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 1rem;
-      background: #ffffff;
-      border-top: 2px solid #0077ff;
-      font-size: .9rem;
-    }
-  </style>
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+@keyframes scaleIn {
+  from {transform:scale(0.8); opacity:0;}
+  to {transform:scale(1); opacity:1;}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Crowd Checker (YOLO)</h1>
-    <p class="badge">Smart City Prototype</p>
-  </header>
+<header>
+  <h1>Crowd Checker (YOLO)</h1>
+  <p class="badge">🚀 Smart City Prototype</p>
+</header>
 
-  <div class="container">
-    <div class="card">
-      <p>Letakkan gambar di folder <code>data/</code></p>
-
-      <!-- 🔹 Tambahan Mode Pilih Transportasi -->
-      <div style="display:flex; gap:10px; justify-content:center; margin:1rem 0;">
-        <button onclick="chooseMode('kereta')">🚆 Kereta</button>
-        <button onclick="chooseMode('bus')">🚌 Bus</button>
-      </div>
-      <div id="modeSection"></div>
-      <!-- 🔹 End -->
-
-      <h3 id="rekom"></h3>
-      <div id="grid" class="grid"></div>
+<div class="container">
+  <div class="card">
+    <p>📂 Letakkan gambar di folder <code>data/</code></p>
+    <!-- Mode Pilih Transportasi -->
+    <div style="display:flex; gap:10px; justify-content:center; margin:1rem 0;">
+      <button onclick="chooseMode('kereta')">🚆 Kereta</button>
+      <button onclick="chooseMode('bus')">🚌 Bus</button>
     </div>
+    <div id="modeSection"></div>
+    <h3 id="rekom"></h3>
+    <div id="grid" class="grid"></div>
   </div>
+</div>
 
-  <div class="footer">© Crowd-App Prototype with YOLO</div>
+<div class="footer">© Crowd-App Prototype with YOLO</div>
 
-  <script>
-    const API = "http://127.0.0.1:8000";
-
-    // Mode pilih transportasi
-    function chooseMode(m) {
-      const sec = document.getElementById("modeSection");
-      if (m === "kereta") {
-        sec.innerHTML = 
-          `<h3>Hasil Deteksi Kereta</h3>
-           <button onclick="processKereta()">Cek Semua Gerbong</button>
-           <div id="keretaResult"></div>
-           <div id="keretaList"></div>`;
-      } else {
-        sec.innerHTML = 
-          `<h3>Hasil Deteksi Bus</h3>
-           <button onclick="processBus()">Cek Bus</button>
-           <div id="busResult"></div>`;
-      }
-    }
-
-    // ---------------- KERETA ----------------
-    async function processKereta() {
-      const res = await fetch(`${API}/predict-kereta`);
-      const data = await res.json();
-
-      document.getElementById("keretaResult").innerHTML =
-        `<h4>Rekomendasi: Gerbong ${data.best_carriage}</h4>
-         <p>Terisi: ${data.occupancy} orang</p>
-         <div>${data.desc}</div>`;
-
-      const listDiv = document.getElementById("keretaList");
-      listDiv.innerHTML = "";
-      data.results.forEach((g, i) => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML =
-          `<h4>Gerbong ${g.carriage || i+1}</h4>
-           <p>Jumlah orang: ${g.count}</p>
-           <p>Crowded: ${g.occupancy}%</p>
-           <button onclick="showGerbongDetail('${g.carriage || i+1}', ${g.count}, '${g.out_file}')">Detail</button>`;
-        listDiv.appendChild(div);
-      });
-    }
-
-    function showGerbongDetail(carriage, count, out_file) {
-      document.getElementById("modalText").innerHTML =
-        `Detail Gerbong ${carriage}<br>Jumlah orang: ${count}`;
-      document.getElementById("modalImg").src = `${API}/${out_file}`;
-      document.getElementById("modal").style.display = "flex";
-    }
-
-    // ---------------- BUS ----------------
-    async function processBus() {
-      const res = await fetch(`${API}/predict-bus`);
-      const data = await res.json();
-
-      document.getElementById("busResult").innerHTML =
-        `<h4>Jumlah orang: ${data.count}</h4>
-         <p>Crowded: ${data.occupancy}%</p>
-         <p>Opini: ${data.recommendation}</p>
-         <img src="${API}/${data.out_file}" style="max-width:100%;"/>`;
-    }
-
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-  </script>
-
-  <!-- Modal untuk menampilkan detail gerbong -->
-  <div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.6);justify-content:center;align-items:center;">
-    <div style="background:#fff;padding:1rem;border-radius:1rem;max-width:90%;max-height:90%;
-      text-align:center;position:relative;">
-      <span style="position:absolute;top:0.5rem;right:1rem;font-size:1.5rem;cursor:pointer;" onclick="closeModal()">✖</span>
-      <div id="modalText" style="margin-bottom:1rem;font-weight:bold;"></div>
-      <img id="modalImg" src="" style="max-width:100%;max-height:70vh;border-radius:0.5rem;" />
-    </div>
+<!-- Modal -->
+<div id="modal">
+  <div>
+    <span onclick="closeModal()">✖</span>
+    <div id="modalText"></div>
+    <img id="modalImg" src=""/>
   </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function chooseMode(m) {
+  const sec = document.getElementById("modeSection");
+  if (m === "kereta") {
+    sec.innerHTML = `
+      <h3>🚆 Hasil Deteksi Kereta</h3>
+      <button onclick="processKereta()">Cek Semua Gerbong</button>
+      <div id="keretaResult"></div>
+      <div id="keretaList" class="grid"></div>
+    `;
+  } else {
+    sec.innerHTML = `
+      <h3>🚌 Hasil Deteksi Bus</h3>
+      <button onclick="processBus()">Cek Bus</button>
+      <div id="busResult"></div>
+    `;
+  }
+}
+
+// ---------------- KERETA ----------------
+async function processKereta() {
+  const res = await fetch(`${API}/predict-kereta`);
+  const data = await res.json();
+  document.getElementById("keretaResult").innerHTML = `
+    <h4>Rekomendasi: Gerbong ${data.best_carriage}</h4>
+    <p>Terisi: ${data.occupancy} orang</p>
+    <div>${data.desc}</div>
+  `;
+  const listDiv = document.getElementById("keretaList");
+  listDiv.innerHTML = "";
+  data.results.forEach((g, i) => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    // Tentukan level crowded
+    let levelClass = "low";
+    let levelText = "Low";
+    if (g.occupancy >= 70) { levelClass = "high"; levelText = "High"; }
+    else if (g.occupancy >= 40) { levelClass = "medium"; levelText = "Medium"; }
+
+    div.innerHTML = `
+      <h4>Gerbong ${g.carriage || i+1}</h4>
+      <p>Jumlah orang: ${g.count}</p>
+      <p>Crowded: ${g.occupancy}%
+         <span class="crowd-indicator ${levelClass}">${levelText}</span>
+      </p>
+      <button onclick="showGerbongDetail('${g.carriage || i+1}', ${g.count}, '${g.out_file}')">Detail</button>
+    `;
+    listDiv.appendChild(div);
+  });
+}
+
+function showGerbongDetail(carriage, count, out_file) {
+  document.getElementById("modalText").innerHTML = `Detail Gerbong ${carriage}<br>Jumlah orang: ${count}`;
+  document.getElementById("modalImg").src = `${API}/${out_file}`;
+  document.getElementById("modal").style.display = "flex";
+}
+
+// ---------------- BUS ----------------
+async function processBus() {
+  const res = await fetch(`${API}/predict-bus`);
+  const data = await res.json();
+
+  // Tentukan level crowded
+  let levelClass = "low";
+  let levelText = "Low";
+  if (data.occupancy >= 70) { levelClass = "high"; levelText = "High"; }
+  else if (data.occupancy >= 40) { levelClass = "medium"; levelText = "Medium"; }
+
+  document.getElementById("busResult").innerHTML = `
+    <h4>Jumlah orang: ${data.count}</h4>
+    <p>Crowded: ${data.occupancy}%
+       <span class="crowd-indicator ${levelClass}">${levelText}</span>
+    </p>
+    <p>Opini: ${data.recommendation}</p>
+    <img src="${API}/${data.out_file}" style="max-width:100%;border-radius:0.5rem;margin-top:1rem;"/>
+  `;
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+</script>
 </body>
 </html>
